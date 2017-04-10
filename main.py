@@ -2,40 +2,57 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PyQt5 import QtWidgets, QtGui
 
-from SymbolWriterWidget import WriterWidget
+from PyQt5 import QtWidgets
+from GestureViewWidget import GestureViewWidget
+from GestureAddWidget import GestureAddWidget
 
-__author__ = "ephtron"
 
 class MainWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
+        """
+        Main widget that holds the different views on our symbols
+        Additionally it offers the option to add a new symbol
+        :param parent:
+        """
         super(MainWidget, self).__init__(parent)
 
-        writer_widget = WriterWidget(self)
-        writer_widget.clearImage()
+        # create symbols that can be used
+        self.gestures = ['o', "x", "v"]
+        self.gesture_views = []
 
-        vbox = QtWidgets.QVBoxLayout()
-        vbox.addWidget(writer_widget)
+        self.symbol_adder = GestureAddWidget(self)
+        self.symbol_adder.add_gesture_signal.connect(self.add_gesture)
 
-        box = QtWidgets.QGroupBox()
-        box.setLayout(vbox)
+        self.vbox = QtWidgets.QVBoxLayout(self)
+        self.vbox.addWidget(self.symbol_adder)
 
+        for gesture in self.gestures:
+            _gesture_view = GestureViewWidget(gesture, self)
+            self.vbox.addWidget(_gesture_view)
+            self.gesture_views.append(_gesture_view)
 
+        self.box = QtWidgets.QGroupBox('All gestures:', self)
+        self.box.setLayout(self.vbox)
 
-        scroll = QtWidgets.QScrollArea()
-        scroll.setWidget(box)
-        scroll.setWidgetResizable(True)
-        scroll.setFixedHeight(600)
-        scroll.setFixedWidth(400)
+        self.scroll = QtWidgets.QScrollArea(self)
+        self.scroll.setWidget(self.box)
+        self.scroll.setWidgetResizable(True)
         layout = QtWidgets.QVBoxLayout(self)
-        layout.addWidget(scroll)
+        layout.addWidget(self.scroll)
+
+    def add_gesture(self, value):
+        if value not in self.symbols:
+            self.symbols.append(value)
+            _gesture_view = GestureViewWidget(value, self)
+            self.vbox.addWidget(_gesture_view)
+            self.gesture_views.append(_gesture_view)
 
 
 def main():
-    app = QtWidgets.QApplication(sys.argv)
+    app = QtWidgets.QApplication([])
     mw = QtWidgets.QMainWindow()
-    mw.setWindowTitle("Recognize")
+    mw.setWindowTitle("Recog - Nice")
     w = MainWidget(parent=mw)
     mw.setCentralWidget(w)
     mw.show()
