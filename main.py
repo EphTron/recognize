@@ -1,64 +1,64 @@
-import numpy as np
-import operator
-from matplotlib import pyplot as plt
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
-IMAGE_DIMENSIONS = (255, 255)
+import sys
+
+from PyQt5 import QtWidgets
+from GestureViewWidget import GestureViewWidget
+from GestureAddWidget import GestureAddWidget
+
+
+class MainWidget(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        """
+        Main widget that holds the different views on our symbols
+        Additionally it offers the option to add a new symbol
+        :param parent:
+        """
+        super(MainWidget, self).__init__(parent)
+
+        # create symbols that can be used
+        self.gestures = ['o', "x", "v"]
+        self.gesture_views = []
+
+        self.symbol_adder = GestureAddWidget(self)
+        self.symbol_adder.add_gesture_signal.connect(self.add_gesture)
+
+        self.vbox = QtWidgets.QVBoxLayout(self)
+        self.vbox.addWidget(self.symbol_adder)
+
+        for gesture in self.gestures:
+            _gesture_view = GestureViewWidget(gesture, self)
+            self.vbox.addWidget(_gesture_view)
+            self.gesture_views.append(_gesture_view)
+
+        self.box = QtWidgets.QGroupBox('All gestures:', self)
+        self.box.setLayout(self.vbox)
+
+        self.scroll = QtWidgets.QScrollArea(self)
+        self.scroll.setWidget(self.box)
+        self.scroll.setWidgetResizable(True)
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.addWidget(self.scroll)
+
+    def add_gesture(self, value):
+        if value not in self.symbols:
+            self.symbols.append(value)
+            _gesture_view = GestureViewWidget(value, self)
+            self.vbox.addWidget(_gesture_view)
+            self.gesture_views.append(_gesture_view)
 
 
 def main():
-    path = "gestures/"
-    fileprefix = "myfile"
+    app = QtWidgets.QApplication([])
+    mw = QtWidgets.QMainWindow()
+    mw.setWindowTitle("Recog - Nice")
+    w = MainWidget(parent=mw)
+    mw.setCentralWidget(w)
+    mw.show()
 
-    # parse points
-    points = parse_files(open_file(path + fileprefix + str(1)))
-    point_list = [Point(p[0], p[1]) for p in points]
-
-    # create dict containing x and y values
-    x_dict, y_dict = {}, {}
-    for p in point_list:
-        x_dict[p.id] = p.x
-        y_dict[p.id] = p.y
-
-    # get min and max values
-    min_x = min(x_dict.items(), key=operator.itemgetter(1))[0]
-    max_x = max(x_dict.items(), key=operator.itemgetter(1))[0]
-
-    print(x_dict[12])
-    foo = map_to(x_dict[12], min_x, max_x, 1, 255)
-    print(foo)
-
-    min_y = min(y_dict.items(), key=operator.itemgetter(1))[0]
-    max_y = max(y_dict.items(), key=operator.itemgetter(1))[0]
+    sys.exit(app.exec_())
 
 
-def map_to(value, in_start, in_end, out_start, out_end):
-    return out_start - ((out_end - out_start) / (in_end - in_start)) * (value - in_start)
-
-
-def open_file(name):
-    return [line.rstrip('\n') for line in open(name)]
-
-
-def parse_files(lines):
-    ret = []
-    for line in lines:
-        ret.append([float(x) for x in line.split(' ')])
-    return ret
-
-
-class Point:
-    instances = 0
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.id = Point.instances
-
-        Point.instances += 1
-
-    def __str__(self):
-        return "<Point id: " + str(self.id) + " _x: " + str(self.x) + " y: " + str(self.y) + ">"
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
