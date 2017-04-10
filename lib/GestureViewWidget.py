@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 
-from GestureCreationDialog import GestureCreationDialog
+from .GestureCreationDialog import GestureCreationDialog
 
 
 class GestureViewWidget(QtWidgets.QWidget):

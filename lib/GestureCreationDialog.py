@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtWidgets
-from GestureCreationWidget import GestureCreationWidget
+from .GestureCreationWidget import GestureCreationWidget
 
 
 class GestureCreationDialog(QtWidgets.QDialog):

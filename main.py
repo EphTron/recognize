@@ -4,8 +4,8 @@
 import sys
 
 from PyQt5 import QtWidgets
-from GestureViewWidget import GestureViewWidget
-from GestureAddWidget import GestureAddWidget
+from lib.GestureViewWidget import GestureViewWidget
+from lib.GestureAddWidget import GestureAddWidget
 
 
 class MainWidget(QtWidgets.QWidget):
