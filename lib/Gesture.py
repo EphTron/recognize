@@ -3,4 +3,3 @@ class Gesture:
         self.name = name
         self.path = path
 
- 

@@ -17,8 +17,8 @@ class GestureCreationWidget(QtWidgets.QWidget):
         self.penColor = QtCore.Qt.white
         image_size = QtCore.QSize(100, 100)
 
-        self.symbolImage = QtGui.QImage(image_size, QtGui.QImage.Format_RGB32)
-        # vbox.addWidget(self.symbolImage)
+        self.gesture_image = QtGui.QImage(image_size, QtGui.QImage.Format_RGB32)
+        # vbox.addWidget(self.gesture_image)
         self.lastPoint = QtCore.QPoint
         self.setFixedSize(100, 100)
 
@@ -31,12 +31,12 @@ class GestureCreationWidget(QtWidgets.QWidget):
         h = loadedImage.height()
         # self.mainWindow.resize(w,h)
 
-        self.symbolImage = loadedImage
+        self.gesture_image = loadedImage
         self.modified = False
         self.update()
 
     def saveImage(self, file_name, file_format):
-        visibleImage = self.symbolImage
+        visibleImage = self.gesture_image
         self.resizeImage(visibleImage, self.size())
 
         if visibleImage.save(file_name, file_format):
@@ -52,7 +52,7 @@ class GestureCreationWidget(QtWidgets.QWidget):
         self.penWidth = new_width
 
     def clearImage(self):
-        self.symbolImage.fill(QtGui.qRgb(0, 0, 0))
+        self.gesture_image.fill(QtGui.qRgb(0, 0, 0))
         self.modified = True
         self.update()
 
@@ -72,15 +72,15 @@ class GestureCreationWidget(QtWidgets.QWidget):
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
-        painter.drawImage(event.rect(), self.symbolImage)
+        painter.drawImage(event.rect(), self.gesture_image)
 
     def resizeEvent(self, event):
-        self.resizeImage(self.symbolImage, event.size())
+        self.resizeImage(self.gesture_image, event.size())
         super(GestureCreationWidget, self).resizeEvent(event)
         print("Resize", event.size())
 
     def drawLineTo(self, end_point):
-        painter = QtGui.QPainter(self.symbolImage)
+        painter = QtGui.QPainter(self.gesture_image)
         painter.setPen(QtGui.QPen(self.penColor, self.penWidth,
                                   QtCore.Qt.SolidLine, QtCore.Qt.RoundCap,
                                   QtCore.Qt.RoundJoin))
@@ -100,7 +100,7 @@ class GestureCreationWidget(QtWidgets.QWidget):
         new_image.fill(QtGui.qRgb(255, 255, 255))
         painter = QtGui.QPainter(new_image)
         painter.drawImage(QtCore.QPoint(0, 0), image)
-        self.symbolImage = new_image
+        self.gesture_image = new_image
 
     def print_(self):
         printer = QtGui.QPrinter(QtGui.QPrinter.HighResolution)
@@ -112,8 +112,8 @@ class GestureCreationWidget(QtWidgets.QWidget):
             size.scale(rect.size, QtCore.Qt.KeepAspectRatio)
             painter.setViewport(rect.x(), rect.y(),
                                 size.width(), size.height())
-            painter.setWindow(self.symbolImage.rect())
-            painter.drawImage(0, 0, self.symbolImage)
+            painter.setWindow(self.gesture_image.rect())
+            painter.drawImage(0, 0, self.gesture_image)
             painter.end()
 
     def isModified(self):

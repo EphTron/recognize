@@ -20,36 +20,40 @@ class MainWidget(QtWidgets.QWidget):
         super(MainWidget, self).__init__(parent)
 
         self.gestures = []
+        if not os.path.exists("gestures/"):
+            os.makedirs("gestures/")
+
         for file in os.listdir("gestures/"):
             self.gestures.append(file)
 
         self.gesture_views = []
 
-        self.symbol_adder = GestureAddWidget(self)
-        self.symbol_adder.add_gesture_signal.connect(self.add_gesture)
+        self.gesture_adder = GestureAddWidget(self)
+        self.gesture_adder.add_gesture_signal.connect(self.add_gesture)
 
         self.vbox = QtWidgets.QVBoxLayout(self)
-        self.vbox.addWidget(self.symbol_adder)
+        self.vbox.addWidget(self.gesture_adder)
 
         self.gestures_box = QtWidgets.QGroupBox("Known Gestures:", self)
-        _v_layout = QtWidgets.QVBoxLayout(self.gestures_box)
+        self.gestures_layout = QtWidgets.QVBoxLayout(self.gestures_box)
         # list all existing gestures
         for gesture in self.gestures:
             _gesture_view = GestureViewWidget(gesture, self)
-            _v_layout.addWidget(_gesture_view)
+            self.gestures_layout.addWidget(_gesture_view)
             self.gesture_views.append(_gesture_view)
-        self.gestures_box.setLayout(_v_layout)
+        self.gestures_box.setLayout(self.gestures_layout)
         self.vbox.addWidget(self.gestures_box)
 
         self.capturings_box = QtWidgets.QGroupBox("Captured Point-Lists:", self)
-        _v_layout = QtWidgets.QVBoxLayout(self.capturings_box)
+        self.capturings_layout = QtWidgets.QVBoxLayout(self.capturings_box)
         # list all point_lists captured in our vr application
         for file in os.listdir("gesture_point_lists/"):
             if file.endswith(".gpl"):
                 _parser_widget = ConverterWidget(file, self)
-                _v_layout.addWidget(_parser_widget)
+                self.capturings_layout.addWidget(_parser_widget)
+                _parser_widget.add_gesture_signal.connect(self.add_gesture)
                 print(os.path.join("gesture_point_lists/", file))
-        self.capturings_box.setLayout(_v_layout)
+        self.capturings_box.setLayout(self.capturings_layout)
         self.vbox.addWidget(self.capturings_box)
 
         self.box = QtWidgets.QGroupBox('Gesture Panel:', self)
@@ -62,11 +66,15 @@ class MainWidget(QtWidgets.QWidget):
         layout.addWidget(self.scroll)
 
     def add_gesture(self, value):
-        if value not in self.symbols:
-            self.symbols.append(value)
+        if value not in self.gestures:
+            self.gestures.append(value)
             _gesture_view = GestureViewWidget(value, self)
-            self.vbox.addWidget(_gesture_view)
+            self.gestures_layout.addWidget(_gesture_view)
             self.gesture_views.append(_gesture_view)
+
+            directory = "gestures/" + value
+            if not os.path.exists(directory):
+                os.makedirs(directory)
 
 
 def main():
@@ -75,7 +83,7 @@ def main():
     mw.setWindowTitle("Recog - Nice")
     w = MainWidget(parent=mw)
     mw.setCentralWidget(w)
-    mw.resize(600,800)
+    mw.resize(600, 800)
     mw.show()
 
     sys.exit(app.exec_())

@@ -56,7 +56,6 @@ class GestureCreationDialog(QtWidgets.QDialog):
                                                 QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard |
                                                 QtWidgets.QMessageBox.Cancel)
             if ret == QtWidgets.QMessageBox.Save:
-                print("yep")
                 return self.saveFile('png')
             elif ret == QtWidgets.QMessageBox.Cancel:
                 return False
