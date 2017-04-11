@@ -1,3 +1,4 @@
+import os
 from PyQt5 import QtWidgets, QtGui, QtCore
 
 from .GestureCreationDialog import GestureCreationDialog
@@ -15,19 +16,21 @@ class GestureViewWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.label)
 
         self.image_label = QtWidgets.QLabel(self)
-        self.pixmap = QtGui.QPixmap('gestures/' + self.gesture_name + '/' + self.gesture_name + '0.jpeg')
-
-        self.image_label.setPixmap(self.pixmap)
+        self.path = 'gestures/' + self.gesture_name + '/' + self.gesture_name + '_0.jpeg'
+        if os.path.exists(self.path):
+            self.pixmap = QtGui.QPixmap(self.path)
+            self.pixmap = self.pixmap.scaled(64, 64)
+            self.image_label.setPixmap(self.pixmap)
         self.layout.addWidget(self.image_label)
 
-        self.edit_button = QtWidgets.QPushButton("Edit", self)
-        self.layout.addWidget(self.edit_button)
+        self.add_button = QtWidgets.QPushButton("Edit", self)
+        self.layout.addWidget(self.add_button)
 
         @QtCore.pyqtSlot()
         def on_click():
             self.writer_dialog.exec_()
 
-        self.edit_button.clicked.connect(on_click)
+        self.add_button.clicked.connect(on_click)
         self.writer_dialog.new_image_signal.connect(self.update_gesture)
         self.setLayout(self.layout)
 
@@ -36,5 +39,5 @@ class GestureViewWidget(QtWidgets.QWidget):
                                     + self.gesture_name
                                     + '/'
                                     + self.gesture_name
-                                    + '0.jpeg')
+                                    + '_0.jpeg')
         self.image_label.setPixmap(self.pixmap)
