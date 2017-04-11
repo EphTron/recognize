@@ -14,7 +14,7 @@ class GestureCreationWidget(QtWidgets.QWidget):
         self.modified = False
         self.scribbeling = False
         self.penWidth = 4
-        self.penColor = QtCore.Qt.black
+        self.penColor = QtCore.Qt.white
         image_size = QtCore.QSize(100, 100)
 
         self.symbolImage = QtGui.QImage(image_size, QtGui.QImage.Format_RGB32)
@@ -52,7 +52,7 @@ class GestureCreationWidget(QtWidgets.QWidget):
         self.penWidth = new_width
 
     def clearImage(self):
-        self.symbolImage.fill(QtGui.qRgb(255, 255, 255))
+        self.symbolImage.fill(QtGui.qRgb(0, 0, 0))
         self.modified = True
         self.update()
 
