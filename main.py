@@ -24,7 +24,8 @@ class MainWidget(QtWidgets.QWidget):
             os.makedirs("gestures/")
 
         for file in os.listdir("gestures/"):
-            self.gestures.append(file)
+            if not os.path.isfile(file):
+                self.gestures.append(file)
 
         self.gesture_views = []
 
