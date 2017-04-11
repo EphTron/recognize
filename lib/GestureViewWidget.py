@@ -4,22 +4,18 @@ from .GestureCreationDialog import GestureCreationDialog
 
 
 class GestureViewWidget(QtWidgets.QWidget):
-    def __init__(self, gesture, parent=None):
+    def __init__(self, gesture_name, parent=None):
         super(GestureViewWidget, self).__init__(parent)
 
-        self.gesture = gesture
-        self.writer_dialog = GestureCreationDialog(self.gesture, self)
+        self.gesture_name = gesture_name
+        self.writer_dialog = GestureCreationDialog(self.gesture_name, self)
 
-        self.label = QtWidgets.QLabel("Gesture " + self.gesture)
+        self.label = QtWidgets.QLabel("Gesture " + self.gesture_name)
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.addWidget(self.label)
 
         self.image_label = QtWidgets.QLabel(self)
-
-        if self.gesture == " ":
-            self.pixmap = QtGui.QPixmap('gesture/symbols/' + "space" + '.png')
-        else:
-            self.pixmap = QtGui.QPixmap('gesture/symbols/' + self.gesture + '.png')
+        self.pixmap = QtGui.QPixmap('gestures/' + self.gesture_name + '/' + self.gesture_name + '0.jpeg')
 
         self.image_label.setPixmap(self.pixmap)
         self.layout.addWidget(self.image_label)
@@ -36,9 +32,9 @@ class GestureViewWidget(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
     def update_gesture(self):
-        print("new image foo")
-        if self.gesture == " ":
-            self.pixmap = QtGui.QPixmap('gesture/symbols/' + "space" + '.png')
-        else:
-            self.pixmap = QtGui.QPixmap('gesture/symbols/' + self.gesture + '.png')
+        self.pixmap = QtGui.QPixmap('gestures/'
+                                    + self.gesture_name
+                                    + '/'
+                                    + self.gesture_name
+                                    + '0.jpeg')
         self.image_label.setPixmap(self.pixmap)
