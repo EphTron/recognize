@@ -38,7 +38,6 @@ class GestureCreationWidget(QtWidgets.QWidget):
     def saveImage(self, file_name, file_format):
         visibleImage = self.gesture_image
         self.resizeImage(visibleImage, self.size())
-
         if visibleImage.save(file_name, file_format):
             self.modified = False
             return True

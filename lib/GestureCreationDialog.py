@@ -1,3 +1,5 @@
+import os
+
 from PyQt5 import QtCore, QtWidgets
 from .GestureCreationWidget import GestureCreationWidget
 
@@ -5,26 +7,27 @@ from .GestureCreationWidget import GestureCreationWidget
 class GestureCreationDialog(QtWidgets.QDialog):
     new_image_signal = QtCore.pyqtSignal()
 
-    def __init__(self, gesture, parent=None):
+    def __init__(self, gesture_name, image_id, parent=None):
         super(GestureCreationDialog, self).__init__(parent)
 
-        self.gesture = gesture
+        self.gesture_name = gesture_name
+        self.gesture_image_id = image_id
         self.initUI()
 
     def initUI(self):
 
         hbox = QtWidgets.QHBoxLayout()
 
-        self.save_button = QtWidgets.QPushButton("Save")
+        self.save_button = QtWidgets.QPushButton("Save",self)
         hbox.addWidget(self.save_button)
 
-        self.exit_button = QtWidgets.QPushButton("Exit")
+        self.exit_button = QtWidgets.QPushButton("Exit",self)
         hbox.addWidget(self.exit_button)
 
         self.gesture_creator = GestureCreationWidget(self)
         self.gesture_creator.clearImage()
 
-        vbox = QtWidgets.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout(self)
         vbox.addWidget(self.gesture_creator)
         vbox.addLayout(hbox)
 
@@ -32,13 +35,16 @@ class GestureCreationDialog(QtWidgets.QDialog):
 
         @QtCore.pyqtSlot()
         def save():
-            file_format = "png"
+            file_format = "jpeg"
             self.saveFile(file_format)
+            self.close()
+
         self.save_button.clicked.connect(save)
 
         @QtCore.pyqtSlot()
         def close():
             self.close()
+
         self.exit_button.clicked.connect(close)
 
     def closeEvent(self, event):
@@ -46,7 +52,11 @@ class GestureCreationDialog(QtWidgets.QDialog):
             event.accept()
         else:
             event.ignore()
-        self.emit(QtCore.SIGNAL("new_image"))
+
+
+    def set_gesture_image_id(self, id):
+        print("updated dialog"+ str(id))
+        self.gesture_image_id = id
 
     def maybeSave(self):
         if self.gesture_creator.isModified():
@@ -56,22 +66,44 @@ class GestureCreationDialog(QtWidgets.QDialog):
                                                 QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard |
                                                 QtWidgets.QMessageBox.Cancel)
             if ret == QtWidgets.QMessageBox.Save:
-                return self.saveFile('png')
+                return self.saveFile('jpeg')
             elif ret == QtWidgets.QMessageBox.Cancel:
                 return False
 
         return True
 
-    def saveFile(self, fileFormat):
-        initialPath = QtCore.QDir.currentPath() + '/symbols/' + self.gesture + '.' + fileFormat
+    def saveFileAs(self, file_format):
+        initialPath = QtCore.QDir.currentPath() \
+                      + '/gestures/' \
+                      + self.gesture_name \
+                      + '/' \
+                      + self.gesture_name + '_' + str(self.gesture_image_id) \
+                      + '.' \
+                      + file_format
+        file_name = QtWidgets.QFileDialog.getSaveFileName(self, "Save As",
+                                                          initialPath,
+                                                          "%s Files (*.%s);;All Files (*)" % (
+                                                              file_format.upper(), file_format))
+        if file_name:
+            if self.gesture_creator.saveImage(file_name, file_format):
+                self.new_image_signal.emit()
+                self.close()
+            else:
+                return False
+        return False
 
-        fileName = QtWidgets.QFileDialog.getSaveFileName(self, "Save As",
-                                                         initialPath,
-                                                         "%s Files (*.%s);;All Files (*)" % (
-                                                             fileFormat.upper(), fileFormat))
-        if fileName:
-            print("saving")
-            if self.gesture_creator.saveImage(fileName, fileFormat):
+    def saveFile(self, file_format):
+        file_name = QtCore.QDir.currentPath() \
+                    + '/gestures/' \
+                    + self.gesture_name \
+                    + '/' \
+                    + self.gesture_name \
+                    + "_" + str(self.gesture_image_id) \
+                    + '.' \
+                    + str(file_format)
+        if file_name:
+            if self.gesture_creator.saveImage(file_name, file_format):
+                self.new_image_signal.emit()
                 self.close()
             else:
                 return False
