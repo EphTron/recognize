@@ -1,7 +1,6 @@
 import os
 
 from PyQt5 import QtCore, QtWidgets
-from .GestureCreationWidget import GestureCreationWidget
 from .GestureImageWidget import GestureImageWidget
 
 
@@ -17,12 +16,16 @@ class GestureEditDialog(QtWidgets.QDialog):
         self.layout = QtWidgets.QVBoxLayout(self)
 
         self.grid_layout = QtWidgets.QGridLayout()
-        _image_positions = [(i, j) for i in range(6) for j in range(self.image_count // (6 - 1))]
+        _grid_width = 6
+        if self.image_count > _grid_width:
+            _positions = [(i, j) for i in range(_grid_width) for j in range(self.image_count // (_grid_width - 1))]
+        else:
+            _positions = [(0, i) for i in range(self.image_count)]
         for idx, image in enumerate(os.listdir("gestures/" + self.gesture_name)):
             if image.endswith(".jpeg"):
                 _image_widget = GestureImageWidget(self.gesture_name, idx)
                 self.image_widgets.append(_image_widget)
-                self.grid_layout.addWidget(_image_widget, *_image_positions[idx])
+                self.grid_layout.addWidget(_image_widget, *_positions[idx])
 
         _hbox = QtWidgets.QHBoxLayout()
         self.exit_button = QtWidgets.QPushButton("Exit")
@@ -45,3 +48,7 @@ class GestureEditDialog(QtWidgets.QDialog):
             self.close()
 
         self.exit_button.clicked.connect(close)
+
+    def update_grid(self):
+        pass
+
