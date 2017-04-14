@@ -13,24 +13,20 @@ class GestureEditDialog(QtWidgets.QDialog):
 
         self.gesture_name = gesture_name
         self.image_count = image_count
-        _image_positions = [(i, j) for i in range(6) for j in range(self.image_count//(6-1))]
-        print(_image_positions)
         self.image_widgets = []
         self.layout = QtWidgets.QVBoxLayout(self)
 
         self.grid_layout = QtWidgets.QGridLayout()
-        _count = 0
-        for idx, image in enumerate(os.listdir("gestures/"+self.gesture_name)):
+        _image_positions = [(i, j) for i in range(6) for j in range(self.image_count // (6 - 1))]
+        for idx, image in enumerate(os.listdir("gestures/" + self.gesture_name)):
             if image.endswith(".jpeg"):
-                _image_widget = GestureImageWidget(self.gesture_name, _count)
+                _image_widget = GestureImageWidget(self.gesture_name, idx)
                 self.image_widgets.append(_image_widget)
-                self.grid_layout.addWidget(_image_widget,
-                                        *_image_positions[idx])
-                _count += 1
+                self.grid_layout.addWidget(_image_widget, *_image_positions[idx])
 
-        hbox = QtWidgets.QHBoxLayout()
+        _hbox = QtWidgets.QHBoxLayout()
         self.exit_button = QtWidgets.QPushButton("Exit")
-        hbox.addWidget(self.exit_button)
+        _hbox.addWidget(self.exit_button)
 
         self.grid_box = QtWidgets.QGroupBox("All Gestures Images", self)
         self.grid_box.setLayout(self.grid_layout)
@@ -40,15 +36,12 @@ class GestureEditDialog(QtWidgets.QDialog):
         self.scroll.setWidgetResizable(True)
 
         self.layout.addWidget(self.scroll)
-        self.layout.addLayout(hbox)
+        self.layout.addLayout(_hbox)
         self.setLayout(self.layout)
-        self.resize(1000,900)
-
+        self.resize(1000, 900)
 
         @QtCore.pyqtSlot()
         def close():
             self.close()
 
         self.exit_button.clicked.connect(close)
-
-

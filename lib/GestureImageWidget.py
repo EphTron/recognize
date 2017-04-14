@@ -43,7 +43,7 @@ class GestureImageWidget(QtWidgets.QWidget):
         self.layout.addLayout(self.button_layout)
         self.box = QtWidgets.QGroupBox(self.gesture_name + "_" + str(self.image_id), self)
         self.box.setLayout(self.layout)
-        self.setMinimumSize(140,140)
+        self.setMinimumSize(140, 140)
 
     def remove_gesture(self):
         print("remove", self.path)
