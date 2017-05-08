@@ -7,11 +7,11 @@ from .GestureCreationWidget import GestureCreationWidget
 class GestureCreationDialog(QtWidgets.QDialog):
     new_image_signal = QtCore.pyqtSignal()
 
-    def __init__(self, gesture_name, image_id, parent=None):
+    def __init__(self, gesture_name, ids, parent=None):
         super(GestureCreationDialog, self).__init__(parent)
 
         self.gesture_name = gesture_name
-        self.gesture_image_id = image_id
+        self.image_ids = ids
         self.initUI()
 
     def initUI(self):
@@ -54,9 +54,8 @@ class GestureCreationDialog(QtWidgets.QDialog):
             event.ignore()
 
 
-    def set_gesture_image_id(self, id):
-        print("updated dialog"+ str(id))
-        self.gesture_image_id = id
+    def update_image_ids(self, ids):
+        self.image_ids = ids
 
     def maybeSave(self):
         if self.gesture_creator.isModified():
