@@ -5,22 +5,20 @@ from os import listdir, path
 
 
 class Dataset:
-    def __init__(self, data_path, target, slice_size, size_exponent):
+    def __init__(self, data_path, target, size_exponent):
         """
         c'tor
         :param file:
         :param target:
-        :param slice_size:
         :param size_exponent:
         """
         self.data_path = data_path
         self.target = target
-        self.slice_size = slice_size
         self.size_exponent = size_exponent
         self.images = None
         self.targets = None
 
-    def load_dataset(self):
+    def load(self):
         """
         load single dataset and store in obj
         :return:
