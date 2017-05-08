@@ -1,4 +1,4 @@
-import os
+import os, re
 from PyQt5 import QtWidgets, QtGui, QtCore
 
 from .GestureEditDialog import GestureEditDialog
@@ -10,10 +10,14 @@ class GestureViewWidget(QtWidgets.QWidget):
         super(GestureViewWidget, self).__init__(parent)
 
         self.gesture_name = gesture_name
+        self.path = 'gestures/' + self.gesture_name + '/'
+        self.ids = self.get_image_ids()
+        print(self.ids)
+
         self.image_count = len([name for name in os.listdir('gestures/'+self.gesture_name) if name.endswith(".jpeg")])
         print(self.gesture_name + " with " + str(self.image_count) + " images")
 
-        self.gesture_creation_dialog = GestureCreationDialog(self.gesture_name, self.image_count, self)
+        self.gesture_creation_dialog = GestureCreationDialog(self.gesture_name, self.ids, self)
         self.gesture_creation_dialog.new_image_signal.connect(self.update_gesture)
 
         self.label = QtWidgets.QLabel("Gesture " + self.gesture_name)
@@ -21,11 +25,9 @@ class GestureViewWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.label)
 
         self.image_label = QtWidgets.QLabel(self)
-        self.path = 'gestures/' + self.gesture_name + '/' \
-                    + self.gesture_name + '_0.jpeg'
-
+        self.sample_image = self.path + self.gesture_name + "_" + str(self.ids[0]) + ".jpeg"
         if os.path.exists(self.path):
-            self.pixmap = QtGui.QPixmap(self.path)
+            self.pixmap = QtGui.QPixmap(self.sample_image)
             self.pixmap = self.pixmap.scaled(64, 64)
             self.image_label.setPixmap(self.pixmap)
         self.layout.addWidget(self.image_label)
@@ -56,11 +58,18 @@ class GestureViewWidget(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
     def update_gesture(self):
-        self.image_count = len([name for name in os.listdir('gestures/'+self.gesture_name) if name.endswith(".jpeg")])
-        self.gesture_creation_dialog.set_gesture_image_id(self.image_count)
+        self.ids = self.get_image_ids()
+        self.gesture_creation_dialog.update_image_ids(self.ids)
         print(self.gesture_name + " updated. Now has " + str(self.image_count) + " images")
 
+        self.sample_image = self.path + self.gesture_name + "_" + self.ids[0] + ".jpeg"
         if os.path.exists(self.path):
-            self.pixmap = QtGui.QPixmap(self.path)
+            self.pixmap = QtGui.QPixmap(self.sample_image)
             self.pixmap = self.pixmap.scaled(64, 64)
             self.image_label.setPixmap(self.pixmap)
+
+    def get_image_ids(self):
+        _ids = [int(re.findall('\d+', n)[0]) for n in os.listdir(self.path) if n.endswith(".jpeg")]
+        _ids.sort()
+        return _ids
+
