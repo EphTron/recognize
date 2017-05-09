@@ -18,27 +18,34 @@ class GestureCreationWidget(QtWidgets.QWidget):
         image_size = QtCore.QSize(100, 100)
 
         self.gesture_image = QtGui.QImage(image_size, QtGui.QImage.Format_RGB32)
-        # vbox.addWidget(self.gesture_image)
         self.lastPoint = QtCore.QPoint
         self.setFixedSize(100, 100)
 
-    def openImage(self, file_name):
-        loadedImage = QtGui.QImage()
-        if not loadedImage.load(file_name):
+    def open_image(self, file_name):
+        loaded_image = QtGui.QImage()
+        if not loaded_image.load(file_name):
             return False
 
-        w = loadedImage.width()
-        h = loadedImage.height()
+        w = loaded_image.width()
+        h = loaded_image.height()
         # self.mainWindow.resize(w,h)
 
-        self.gesture_image = loadedImage
+        self.gesture_image = loaded_image
         self.modified = False
         self.update()
 
-    def saveImage(self, file_name, file_format):
-        visibleImage = self.gesture_image
-        self.resizeImage(visibleImage, self.size())
-        if visibleImage.save(file_name, file_format):
+    def open_qimage(self, qimage):
+        loaded_image = qimage
+        print("loaded image", loaded_image)
+
+        self.gesture_image = loaded_image
+        self.modified = False
+        self.update()
+
+    def save_image(self, file_name, file_format):
+        visible_image = self.gesture_image
+        self.resizeImage(visible_image, self.size())
+        if visible_image.save(file_name, file_format):
             self.modified = False
             return True
         else:
@@ -52,7 +59,8 @@ class GestureCreationWidget(QtWidgets.QWidget):
 
     def clearImage(self):
         self.gesture_image.fill(QtGui.qRgb(0, 0, 0))
-        self.modified = True
+        # modified not needed here, as we only refresh after saving
+        # self.modified = True
         self.update()
 
     def mousePressEvent(self, event):
@@ -90,7 +98,7 @@ class GestureCreationWidget(QtWidgets.QWidget):
         self.lastPoint = QtCore.QPoint(end_point)
 
     def resizeImage(self, image, new_size):
-        print("WriterWidget - resizeImage:")
+        # print("WriterWidget - resizeImage:")
         print(new_size)
         if image.size() == new_size:
             return

@@ -11,6 +11,7 @@ class GestureImageWidget(QtWidgets.QWidget):
         super(GestureImageWidget, self).__init__(parent)
         self.gesture_name = gesture_name
         self.image_id = image_id
+        print(self.image_id)
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.image_label = QtWidgets.QLabel(self)
@@ -50,3 +51,6 @@ class GestureImageWidget(QtWidgets.QWidget):
 
     def remove_gesture(self):
         os.remove(self.path)
+        self.remove_image_signal.emit()
+        # self.close()
+        print("emitted removed image signal")

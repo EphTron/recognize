@@ -1,7 +1,9 @@
 import operator
 import math
 import numpy as np
+from skimage import io
 from enum import Enum
+import matplotlib.pyplot as plt
 
 
 class Point:
@@ -34,12 +36,31 @@ class GestureParser:
         self.scale_mode = SCALE_MODE
         self.img_dim = IMAGE_DIMENSION
 
-    def convert_point_list_to_image(self, point_list):
+    def open_gpl_file(self, file_name):
+        result = [line.rstrip('\n') for line in open(file_name)]
+        print(result)
+        return result
+
+    def prepare_lines(self, lines):
+        ret = []
+        for line in lines:
+            ret.append([float(x) for x in line.split(' ')])
+        print(ret)
+        return ret
+
+    def convert_gpl_to_pointlist(self, path, file_name):
+
+        points = self.prepare_lines(self.open_gpl_file(path + file_name))
+
+        point_list = [Point(p[0], p[1]) for p in points]
+        print(point_list)
+        return point_list
+
+    def convert_point_list_to_scaled_image_array(self, point_list):
         """
         parse image from point list to numpy nd array
         :return: ndarray
         """
-
         # create dict containing x and y values
         x_dict, y_dict = {}, {}
         for p in point_list:
@@ -65,9 +86,10 @@ class GestureParser:
         max_distance_y = math.fabs(min_y) + math.fabs(max_y)
 
         # create new internet (aka image)
-        image = [[0 for j in range(0, self.img_dim)] for i in range(0, self.img_dim)]
+        image = [[0 for j in range(0,self.img_dim)] for i in range(0,self.img_dim)]
 
-        p_x, p_y = 0
+        p_x = 0
+        p_y = 0
         for row_idx in range(len(image)):
             for col_idx in range(len(image[0])):
                 for p in point_list:
@@ -92,10 +114,30 @@ class GestureParser:
 
                     # write black pixel if the indices match
                     if (p_x == row_idx and p_y == col_idx):
-                        image[row_idx][col_idx] = 16
+                        image[row_idx][col_idx] = 255
 
         # cast image to np array and return
+        # plt.figure(1)
+        plt.imshow(image)
+        plt.show()
         return np.asarray(image)
+
+
+    def save_array_as_image(self, array, path, filename):
+        """
+        saves the input array to the given destination
+        :param array: numpy nd array
+        :param path: local path to save the image
+        :param filename: name of the file including extension
+        :return:
+        """
+
+        # if there is no slash at the end of the destination
+        if path[-1] != "/":
+            path = path + "/"
+        print(path + filename)
+        ## saves the image
+        io.imsave(path + filename, array)
 
 
 def map_to(value, from_min, from_max, to_min, to_max):

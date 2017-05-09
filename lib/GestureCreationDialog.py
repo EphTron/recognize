@@ -7,11 +7,12 @@ from .GestureCreationWidget import GestureCreationWidget
 class GestureCreationDialog(QtWidgets.QDialog):
     new_image_signal = QtCore.pyqtSignal()
 
-    def __init__(self, gesture_name, ids, parent=None):
+    def __init__(self, gesture_name, image_id, parent=None):
         super(GestureCreationDialog, self).__init__(parent)
 
         self.gesture_name = gesture_name
-        self.image_ids = ids
+        self.image_id = image_id
+
         self.initUI()
 
     def initUI(self):
@@ -25,7 +26,7 @@ class GestureCreationDialog(QtWidgets.QDialog):
         hbox.addWidget(self.exit_button)
 
         self.gesture_creator = GestureCreationWidget(self)
-        self.gesture_creator.clearImage()
+        # self.gesture_creator.clearImage()
 
         vbox = QtWidgets.QVBoxLayout(self)
         vbox.addWidget(self.gesture_creator)
@@ -47,6 +48,10 @@ class GestureCreationDialog(QtWidgets.QDialog):
 
         self.exit_button.clicked.connect(close)
 
+    def load_image(self, qimage):
+        print("load image")
+        self.gesture_creator.open_qimage(qimage)
+
     def closeEvent(self, event):
         if self.maybeSave():
             event.accept()
@@ -54,8 +59,8 @@ class GestureCreationDialog(QtWidgets.QDialog):
             event.ignore()
 
 
-    def update_image_ids(self, ids):
-        self.image_ids = ids
+    def update_image_id(self, id):
+        self.image_id = id
 
     def maybeSave(self):
         if self.gesture_creator.isModified():
@@ -76,7 +81,7 @@ class GestureCreationDialog(QtWidgets.QDialog):
                       + '/gestures/' \
                       + self.gesture_name \
                       + '/' \
-                      + self.gesture_name + '_' + str(self.gesture_image_id) \
+                      + self.gesture_name + '_' + str(self.image_id) \
                       + '.' \
                       + file_format
         file_name = QtWidgets.QFileDialog.getSaveFileName(self, "Save As",
@@ -86,6 +91,7 @@ class GestureCreationDialog(QtWidgets.QDialog):
         if file_name:
             if self.gesture_creator.saveImage(file_name, file_format):
                 self.new_image_signal.emit()
+                self.gesture_creator.clearImage()
                 self.close()
             else:
                 return False
@@ -97,12 +103,13 @@ class GestureCreationDialog(QtWidgets.QDialog):
                     + self.gesture_name \
                     + '/' \
                     + self.gesture_name \
-                    + "_" + str(self.gesture_image_id) \
+                    + "_" + str(self.image_id) \
                     + '.' \
                     + str(file_format)
         if file_name:
-            if self.gesture_creator.saveImage(file_name, file_format):
+            if self.gesture_creator.save_image(file_name, file_format):
                 self.new_image_signal.emit()
+                self.gesture_creator.clearImage()
                 self.close()
             else:
                 return False

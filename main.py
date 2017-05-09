@@ -48,9 +48,11 @@ class MainWidget(QtWidgets.QWidget):
         self.capturings_box = QtWidgets.QGroupBox("Captured Point-Lists:", self)
         self.capturings_layout = QtWidgets.QVBoxLayout(self.capturings_box)
         # list all point_lists captured in our vr application
-        for file in os.listdir("gesture_point_lists/"):
+        _point_list_path = "gesture_point_lists/"
+        print(_point_list_path)
+        for file in os.listdir(_point_list_path):
             if file.endswith(".gpl"):
-                _parser_widget = ConverterWidget(file, self)
+                _parser_widget = ConverterWidget(file, _point_list_path, self)
                 self.capturings_layout.addWidget(_parser_widget)
                 _parser_widget.add_gesture_signal.connect(self.add_gesture)
                 print(os.path.join("gesture_point_lists/", file))
@@ -68,14 +70,16 @@ class MainWidget(QtWidgets.QWidget):
 
     def add_gesture(self, value):
         if value not in self.gestures:
+
+            directory = "gestures/" + value
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+
             self.gestures.append(value)
             _gesture_view = GestureViewWidget(value, self)
             self.gestures_layout.addWidget(_gesture_view)
             self.gesture_views.append(_gesture_view)
 
-            directory = "gestures/" + value
-            if not os.path.exists(directory):
-                os.makedirs(directory)
 
 
 def main():
