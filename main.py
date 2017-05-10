@@ -8,6 +8,7 @@ from PyQt5 import QtWidgets, QtCore
 from lib.GestureViewWidget import GestureViewWidget
 from lib.GestureAddWidget import GestureAddWidget
 from lib.ConverterWidget import ConverterWidget
+from lib.RecognizeWidget import RecogniceWidget
 
 
 class MainWidget(QtWidgets.QWidget):
@@ -29,10 +30,13 @@ class MainWidget(QtWidgets.QWidget):
 
         self.gesture_views = {}
 
+        self.vbox = QtWidgets.QVBoxLayout(self)
+        self.recognizer_widget = RecogniceWidget(self)
+        self.vbox.addWidget(self.recognizer_widget)
+
         self.gesture_adder = GestureAddWidget(self)
         self.gesture_adder.add_gesture_signal.connect(self.add_gesture)
 
-        self.vbox = QtWidgets.QVBoxLayout(self)
         self.vbox.addWidget(self.gesture_adder)
 
         self.gestures_box = QtWidgets.QGroupBox("Known Gestures:", self)
