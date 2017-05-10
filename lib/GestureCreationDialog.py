@@ -26,7 +26,7 @@ class GestureCreationDialog(QtWidgets.QDialog):
         hbox.addWidget(self.exit_button)
 
         self.gesture_creator = GestureCreationWidget(self)
-        # self.gesture_creator.clearImage()
+        self.gesture_creator.clearImage()
 
         vbox = QtWidgets.QVBoxLayout(self)
         vbox.addWidget(self.gesture_creator)
