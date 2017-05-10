@@ -11,7 +11,6 @@ class GestureImageWidget(QtWidgets.QWidget):
         super(GestureImageWidget, self).__init__(parent)
         self.gesture_name = gesture_name
         self.image_id = image_id
-        print(self.image_id)
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.image_label = QtWidgets.QLabel(self)
