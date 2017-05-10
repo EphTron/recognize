@@ -4,7 +4,7 @@
 import os
 import sys
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from lib.GestureViewWidget import GestureViewWidget
 from lib.GestureAddWidget import GestureAddWidget
 from lib.ConverterWidget import ConverterWidget
@@ -27,7 +27,7 @@ class MainWidget(QtWidgets.QWidget):
             if not os.path.isfile(file):
                 self.gestures.append(file)
 
-        self.gesture_views = []
+        self.gesture_views = {}
 
         self.gesture_adder = GestureAddWidget(self)
         self.gesture_adder.add_gesture_signal.connect(self.add_gesture)
@@ -41,7 +41,7 @@ class MainWidget(QtWidgets.QWidget):
         for gesture in self.gestures:
             _gesture_view = GestureViewWidget(gesture, self)
             self.gestures_layout.addWidget(_gesture_view)
-            self.gesture_views.append(_gesture_view)
+            self.gesture_views[gesture] = _gesture_view
         self.gestures_box.setLayout(self.gestures_layout)
         self.vbox.addWidget(self.gestures_box)
 
@@ -55,6 +55,7 @@ class MainWidget(QtWidgets.QWidget):
                 _parser_widget = ConverterWidget(file, _point_list_path, self)
                 self.capturings_layout.addWidget(_parser_widget)
                 _parser_widget.add_gesture_signal.connect(self.add_gesture)
+                _parser_widget.add_gesture_image_signal.connect(self.save_gesture_image)
                 print(os.path.join("gesture_point_lists/", file))
         self.capturings_box.setLayout(self.capturings_layout)
         self.vbox.addWidget(self.capturings_box)
@@ -68,18 +69,32 @@ class MainWidget(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.scroll)
 
-    def add_gesture(self, value):
-        if value not in self.gestures:
+    def add_gesture(self, gesture_name):
+        if gesture_name not in self.gestures:
 
-            directory = "gestures/" + value
+            directory = "gestures/" + gesture_name
             if not os.path.exists(directory):
                 os.makedirs(directory)
 
-            self.gestures.append(value)
-            _gesture_view = GestureViewWidget(value, self)
+            self.gestures.append(gesture_name)
+            _gesture_view = GestureViewWidget(gesture_name, self)
             self.gestures_layout.addWidget(_gesture_view)
-            self.gesture_views.append(_gesture_view)
+            self.gesture_views[gesture_name] = (_gesture_view)
 
+    def save_gesture_image(self, gesture_name, gesture_image):
+        _gesture_view = self.gesture_views[gesture_name]
+        _id = _gesture_view.get_next_image_id()
+        _file_format = "jpeg"
+        _file_name = QtCore.QDir.currentPath() \
+                     + '/gestures/' \
+                     + gesture_name \
+                     + '/' \
+                     + gesture_name \
+                     + "_" + str(_id) \
+                     + '.' \
+                     + str(_file_format)
+        gesture_image.save(_file_name)
+        self.gesture_views[gesture_name].update_gesture()
 
 
 def main():
