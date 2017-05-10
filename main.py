@@ -83,7 +83,7 @@ class MainWidget(QtWidgets.QWidget):
 
     def save_gesture_image(self, gesture_name, gesture_image):
         _gesture_view = self.gesture_views[gesture_name]
-        _id = _gesture_view.get_next_image_id()
+        _id = _gesture_view.get_next_gesture_image_id()
         _file_format = "jpeg"
         _file_name = QtCore.QDir.currentPath() \
                      + '/gestures/' \

@@ -14,15 +14,15 @@ class GestureViewWidget(QtWidgets.QWidget):
         self.ids = self.get_image_ids()
         print("Size:", len(self.ids))
 
-        self.next_gesture_id = 0
+        self.next_gesture_image_id = 0
         if len(self.ids) > 0:
-            self.next_gesture_id = self.ids[-1] + 1
-            print("next id: ", self.next_gesture_id)
+            self.next_gesture_image_id = self.ids[-1] + 1
+            print("next id: ", self.next_gesture_image_id)
 
         self.image_count = len([name for name in os.listdir('gestures/' + self.gesture_name) if name.endswith(".jpeg")])
         print(self.gesture_name + " with " + str(self.image_count) + " images")
 
-        self.gesture_creation_dialog = GestureCreationDialog(self.gesture_name, self.next_gesture_id, self)
+        self.gesture_creation_dialog = GestureCreationDialog(self.gesture_name, self.next_gesture_image_id, self)
         self.gesture_creation_dialog.new_image_signal.connect(self.update_gesture)
 
         self.gesture_edit_dialog = GestureEditDialog(self.gesture_name, self.ids, self)
@@ -63,15 +63,15 @@ class GestureViewWidget(QtWidgets.QWidget):
         self.add_button.clicked.connect(on_click_creation)
         self.setLayout(self.layout)
 
-    def get_next_image_id(self):
-        return self.next_gesture_id
+    def get_next_gesture_image_id(self):
+        return self.next_gesture_image_id
 
     def update_gesture(self):
         self.ids = self.get_image_ids()
         if len(self.ids) > 0:
-            self.next_gesture_id = self.ids[-1] + 1
+            self.next_gesture_image_id = self.ids[-1] + 1
 
-        self.gesture_creation_dialog.update_image_id(self.next_gesture_id)
+        self.gesture_creation_dialog.update_image_id(self.next_gesture_image_id)
         self.gesture_edit_dialog.update_image_ids(self.ids)
         self.image_count = len(self.ids)
         print(self.gesture_name + " updated. Now has " + str(self.image_count) + " images")
