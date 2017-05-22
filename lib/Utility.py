@@ -42,19 +42,24 @@ def load_datasets(directory, size_exponent):
 def qimage_to_image_array(qimage):
     # using code from https://github.com/hmeine/qimage2ndarray
     from qimage2ndarray import qimage2ndarray
+    # convert qimage to ndarray
     ndarray_img = qimage2ndarray.rgb_view(qimage)
-    ndarray_color_to_grey(ndarray_img)
     return ndarray_img
 
+
 def ndarray_color_to_grey(ndarray):
-    grey_ndarray = np.zeros((ndarray.shape[0],ndarray.shape[1]))
-    print(print(ndarray[0:5, 0:5]))
+    """
+    creates new ndarray out of an image
+    with rgb values. new ndarray has only zeros and 255s.
+    :param ndarray: image_array with shape (n,n,3)
+    :return: 
+    """
+    grey_ndarray = np.zeros((ndarray.shape[0], ndarray.shape[1]))
+
+    # converting rgb values to black(0) and white(255)
     for r in range(ndarray.shape[0]):
         for c in range(ndarray.shape[1]):
             if np.array_equal(ndarray[r, c], [255, 255, 255]):
                 grey_ndarray[r, c] = 255
 
-    print(grey_ndarray[0:5, 0:5])
     return grey_ndarray
-
-
