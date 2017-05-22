@@ -52,7 +52,7 @@ class MainWidget(QtWidgets.QWidget):
         self.capturings_box = QtWidgets.QGroupBox("Captured Point-Lists:", self)
         self.capturings_layout = QtWidgets.QVBoxLayout(self.capturings_box)
         # list all point_lists captured in our vr application
-        _point_list_path = "gesture_point_lists/"
+        _point_list_path = "gesture_point_lists"
         print(_point_list_path)
         for file in os.listdir(_point_list_path):
             if file.endswith(".gpl"):
