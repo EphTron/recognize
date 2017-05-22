@@ -61,12 +61,13 @@ class ConverterWidget(QtWidgets.QWidget):
         black = QtGui.QColor(0, 0, 0).rgb()
         white = QtGui.QColor(255, 255, 255).rgb()
         img = QtGui.QImage(width, height, QtGui.QImage.Format_RGB32)
-        for x in range(width):
-            for y in range(height):
-                if image_array[x, y] == 255:
-                    img.setPixel(x, y, white)
+        for r in range(width):
+            for c in range(height):
+
+                if image_array[r, c] == 255:
+                    img.setPixel(c, r, white)
                 else:
-                    img.setPixel(x, y, black)
+                    img.setPixel(c, r, black)
         return img
 
     def save_image_array_as_image(self, image_array, gesture_name):
