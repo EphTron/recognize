@@ -63,6 +63,9 @@ class GestureCreationWidget(QtWidgets.QWidget):
         # self.modified = True
         self.update()
 
+    def get_image(self):
+        return self.gesture_image
+
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:
             self.lastPoint = event.pos()
