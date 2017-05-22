@@ -15,7 +15,7 @@ class Recognizer:
         :param datasets:
         """
         # create classifier
-        self.classifier = svm.SVC(gamma=0.001)
+        self.classifier = svm.SVC(gamma=0.001, probability=True)
 
         # initialize if dataset is available
         if datasets != None:
@@ -36,17 +36,35 @@ class Recognizer:
 
         # reshape data
         data = images.reshape((n_samples, -1))
-
         # learn from dataset
         self.classifier.fit(data, targets)
 
-    def predict(self, targets):
+    def old_predict(self, targets):
         """
         predict input targets using svc's predict function
         :param targets:
         :return:
         """
+        print(type(targets[0]))
+
         return self.classifier.predict(targets)
+
+    def predict(self, targets_to_predict):
+        """
+        predict input targets using svc's predict function
+        :param targets:
+        :return:
+        """
+        # predict target probabilities
+        probabilities = self.classifier.predict_proba(targets_to_predict)
+        classes = self.classifier.classes_
+
+        # build return dict containing
+        result = {}
+        for cl, pr in zip(classes, probabilities[0]):
+            result[cl] = pr
+
+        return result
 
     def report(self, targets, results):
         """
