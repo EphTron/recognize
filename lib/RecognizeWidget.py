@@ -7,10 +7,12 @@ Created on May 10.05.17 10:43
 
 import os
 from PyQt5 import QtWidgets, QtGui, QtCore
+from scipy import misc
 
 from lib.GestureCreationWidget import GestureCreationWidget
 from lib.Recognizer import Recognizer
-from lib.Dataset import Dataset
+
+import lib.Utility
 
 
 class RecogniceWidget(QtWidgets.QWidget):
@@ -23,7 +25,8 @@ class RecogniceWidget(QtWidgets.QWidget):
         self.gesture_creator = GestureCreationWidget(self)
         self.gesture_creator.clearImage()
 
-        self.dataset = Dataset("gestures", "test", 32)
+        self.dataset = None
+        self.targets = None
 
         self.recognizer = Recognizer()
 
@@ -34,9 +37,10 @@ class RecogniceWidget(QtWidgets.QWidget):
         @QtCore.pyqtSlot()
         def on_click_learn():
             print("learn")
-            # self.recognizer.initialize()
+            self.dataset, self.targets = lib.Utility.load_datasets("gestures/", 4)
+            self.recognizer.initialize(self.dataset)
 
-        self.learn_button.clicked.connect(self.predict_gesture_image)
+        self.learn_button.clicked.connect(on_click_learn)
 
 
         self.button_layout = QtWidgets.QHBoxLayout()
@@ -45,6 +49,7 @@ class RecogniceWidget(QtWidgets.QWidget):
 
         @QtCore.pyqtSlot()
         def on_click_clear():
+            print("clear")
             self.gesture_creator.clearImage()
 
         _width = self.clear_button.fontMetrics().boundingRect("Clear").width() + 7
@@ -60,4 +65,16 @@ class RecogniceWidget(QtWidgets.QWidget):
         self.layout.addLayout(self.button_layout)
 
     def predict_gesture_image(self):
-        print("Predict")
+        _image = self.gesture_creator.get_image()
+        _color_img = lib.Utility.qimage_to_image_array(_image)
+        _grey_img = lib.Utility.ndarray_color_to_grey(_color_img)
+
+        new_size = (16, 16)
+        _grey_img_scaled = misc.imresize(_grey_img, new_size) / 16
+
+        _grey_img_array = _grey_img_scaled.flatten()
+
+        result = self.recognizer.predict([_grey_img_array])
+        print(result)
+
+
